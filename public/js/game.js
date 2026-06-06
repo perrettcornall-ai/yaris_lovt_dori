@@ -1,6 +1,12 @@
-const tg = window.Telegram.WebApp;
-tg.ready();
-tg.expand();
+const tg = window.Telegram?.WebApp || { 
+    ready: () => {}, 
+    expand: () => {},
+    initData: '',
+    shareToStory: null
+};
+
+if (tg.ready) tg.ready();
+if (tg.expand) tg.expand();
 
 let gameState = 'menu';
 let canvas = null;
@@ -24,6 +30,7 @@ const INITIAL_SPAWN_RATE = 0.02;
 document.addEventListener('DOMContentLoaded', () => {
     initGame();
     setupEventListeners();
+    console.log('Game initialized');
 });
 
 function initGame() {
@@ -32,6 +39,8 @@ function initGame() {
 
     canvas.width = GAME_WIDTH;
     canvas.height = GAME_HEIGHT;
+
+    console.log('Canvas initialized:', { width: canvas.width, height: canvas.height });
 
     player = new Player(GAME_WIDTH / 2 - 20, GAME_HEIGHT - 100, 40, 50);
     itemsManager = new ItemsManager();
@@ -50,33 +59,68 @@ function initGame() {
 }
 
 function setupEventListeners() {
-    document.getElementById('playBtn').addEventListener('click', startGame);
-    document.getElementById('leaderboardBtn').addEventListener('click', showLeaderboard);
-    document.getElementById('aboutBtn').addEventListener('click', showAbout);
+    const playBtn = document.getElementById('playBtn');
+    if (playBtn) {
+        playBtn.addEventListener('click', () => {
+            console.log('Play button clicked');
+            startGame();
+        });
+    }
+    
+    const leaderboardBtn = document.getElementById('leaderboardBtn');
+    if (leaderboardBtn) leaderboardBtn.addEventListener('click', showLeaderboard);
+    
+    const aboutBtn = document.getElementById('aboutBtn');
+    if (aboutBtn) aboutBtn.addEventListener('click', showAbout);
 
-    document.getElementById('pauseBtn').addEventListener('click', togglePause);
-    document.getElementById('pauseMenu').addEventListener('click', (e) => {
-        if (e.target.id === 'pauseMenu') resumeGame();
-    });
-    document.getElementById('resumeBtn').addEventListener('click', resumeGame);
-    document.getElementById('restartBtn').addEventListener('click', () => {
-        gameOver();
-        startGame();
-    });
-    document.getElementById('mainMenuBtn').addEventListener('click', () => {
-        gameOver();
-        showMenu();
-    });
+    const pauseBtn = document.getElementById('pauseBtn');
+    if (pauseBtn) pauseBtn.addEventListener('click', togglePause);
+    
+    const pauseMenu = document.getElementById('pauseMenu');
+    if (pauseMenu) {
+        pauseMenu.addEventListener('click', (e) => {
+            if (e.target.id === 'pauseMenu') resumeGame();
+        });
+    }
 
-    document.getElementById('restartGameBtn').addEventListener('click', () => {
-        showMenu();
-        setTimeout(() => startGame(), 100);
-    });
-    document.getElementById('shareBtn').addEventListener('click', shareScore);
-    document.getElementById('backToMenuBtn').addEventListener('click', showMenu);
+    const resumeBtn = document.getElementById('resumeBtn');
+    if (resumeBtn) resumeBtn.addEventListener('click', resumeGame);
+    
+    const restartBtn = document.getElementById('restartBtn');
+    if (restartBtn) {
+        restartBtn.addEventListener('click', () => {
+            gameOver();
+            startGame();
+        });
+    }
+    
+    const mainMenuBtn = document.getElementById('mainMenuBtn');
+    if (mainMenuBtn) {
+        mainMenuBtn.addEventListener('click', () => {
+            gameOver();
+            showMenu();
+        });
+    }
 
-    document.getElementById('backBtn').addEventListener('click', showMenu);
-    document.getElementById('backAboutBtn').addEventListener('click', showMenu);
+    const restartGameBtn = document.getElementById('restartGameBtn');
+    if (restartGameBtn) {
+        restartGameBtn.addEventListener('click', () => {
+            showMenu();
+            setTimeout(() => startGame(), 100);
+        });
+    }
+    
+    const shareBtn = document.getElementById('shareBtn');
+    if (shareBtn) shareBtn.addEventListener('click', shareScore);
+    
+    const backToMenuBtn = document.getElementById('backToMenuBtn');
+    if (backToMenuBtn) backToMenuBtn.addEventListener('click', showMenu);
+
+    const backBtn = document.getElementById('backBtn');
+    if (backBtn) backBtn.addEventListener('click', showMenu);
+    
+    const backAboutBtn = document.getElementById('backAboutBtn');
+    if (backAboutBtn) backAboutBtn.addEventListener('click', showMenu);
 
     document.addEventListener('keydown', (e) => {
         if (gameState === 'playing' && !isPaused) {
@@ -90,49 +134,55 @@ function setupEventListeners() {
         if (e.key === 'ArrowRight') player.isMovingRight = false;
     });
 
-    canvas.addEventListener('touchstart', (e) => {
-        if (gameState === 'playing' && !isPaused) {
-            const touchX = e.touches[0].clientX - canvas.getBoundingClientRect().left;
-            const playerCenterX = player.x + player.width / 2;
+    if (canvas) {
+        canvas.addEventListener('touchstart', (e) => {
+            if (gameState === 'playing' && !isPaused) {
+                const touchX = e.touches[0].clientX - canvas.getBoundingClientRect().left;
+                const playerCenterX = player.x + player.width / 2;
 
-            if (touchX < playerCenterX) {
-                player.isMovingLeft = true;
-            } else {
-                player.isMovingRight = true;
+                if (touchX < playerCenterX) {
+                    player.isMovingLeft = true;
+                } else {
+                    player.isMovingRight = true;
+                }
             }
-        }
-    });
+        });
 
-    canvas.addEventListener('touchend', () => {
-        player.isMovingLeft = false;
-        player.isMovingRight = false;
-    });
+        canvas.addEventListener('touchend', () => {
+            player.isMovingLeft = false;
+            player.isMovingRight = false;
+        });
 
-    canvas.addEventListener('touchmove', (e) => {
-        if (gameState === 'playing' && !isPaused) {
-            const touchX = e.touches[0].clientX - canvas.getBoundingClientRect().left;
-            const playerCenterX = player.x + player.width / 2;
+        canvas.addEventListener('touchmove', (e) => {
+            if (gameState === 'playing' && !isPaused) {
+                const touchX = e.touches[0].clientX - canvas.getBoundingClientRect().left;
+                const playerCenterX = player.x + player.width / 2;
 
-            player.isMovingLeft = touchX < playerCenterX;
-            player.isMovingRight = touchX > playerCenterX;
-        }
-    });
+                player.isMovingLeft = touchX < playerCenterX;
+                player.isMovingRight = touchX > playerCenterX;
+            }
+        });
 
-    canvas.addEventListener('mousemove', (e) => {
-        if (gameState === 'playing' && !isPaused) {
-            const rect = canvas.getBoundingClientRect();
-            const mouseX = e.clientX - rect.left;
-            const playerCenterX = player.x + player.width / 2;
+        canvas.addEventListener('mousemove', (e) => {
+            if (gameState === 'playing' && !isPaused) {
+                const rect = canvas.getBoundingClientRect();
+                const mouseX = e.clientX - rect.left;
+                const playerCenterX = player.x + player.width / 2;
 
-            player.isMovingLeft = mouseX < playerCenterX;
-            player.isMovingRight = mouseX > playerCenterX;
-        }
-    });
+                player.isMovingLeft = mouseX < playerCenterX;
+                player.isMovingRight = mouseX > playerCenterX;
+            }
+        });
+    }
 }
 
 function showScreen(screenId) {
     document.querySelectorAll('.screen').forEach(s => s.classList.add('hidden'));
-    document.getElementById(screenId).classList.remove('hidden');
+    const screen = document.getElementById(screenId);
+    if (screen) {
+        screen.classList.remove('hidden');
+    }
+    console.log('Showing screen:', screenId);
 }
 
 function showMenu() {
@@ -145,6 +195,7 @@ function showMenu() {
 }
 
 function startGame() {
+    console.log('Starting game...');
     gameState = 'playing';
     showScreen('gameScreen');
     isGameRunning = true;
@@ -160,6 +211,7 @@ function startGame() {
     itemsManager.level = 1;
     itemsManager.spawnRate = INITIAL_SPAWN_RATE;
 
+    console.log('Game state changed to:', gameState);
     gameLoop();
 }
 
@@ -173,7 +225,10 @@ function togglePause() {
 
 function pauseGame() {
     isPaused = true;
-    document.getElementById('pauseScore').textContent = `Текущий счет: ${score} ₿`;
+    const pauseScore = document.getElementById('pauseScore');
+    if (pauseScore) {
+        pauseScore.textContent = `Текущий счет: ${score} ₿`;
+    }
     showScreen('pauseMenu');
 }
 
@@ -192,11 +247,17 @@ function gameOver() {
 }
 
 function showGameOverScreen() {
-    document.getElementById('finalScore').textContent = `${score} ₿`;
-    document.getElementById('itemsCaught').textContent = itemsCaught;
+    const finalScore = document.getElementById('finalScore');
+    const itemsCaughtEl = document.getElementById('itemsCaught');
+    const gameTimeEl = document.getElementById('gameTime');
+
+    if (finalScore) finalScore.textContent = `${score} ₿`;
+    if (itemsCaughtEl) itemsCaughtEl.textContent = itemsCaught;
+    
     const minutes = Math.floor(gameTime / 60);
     const seconds = gameTime % 60;
-    document.getElementById('gameTime').textContent = `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+    if (gameTimeEl) gameTimeEl.textContent = `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+    
     showScreen('gameOverScreen');
 }
 
@@ -217,9 +278,13 @@ function gameLoop() {
 }
 
 function updateUI() {
-    document.getElementById('score').textContent = `${score} ₿`;
-    document.getElementById('combo').textContent = `Combo: ${combo}x`;
-    document.getElementById('level').textContent = `Уровень: ${level}`;
+    const scoreEl = document.getElementById('score');
+    const comboEl = document.getElementById('combo');
+    const levelEl = document.getElementById('level');
+
+    if (scoreEl) scoreEl.textContent = `${score} ₿`;
+    if (comboEl) comboEl.textContent = `Combo: ${combo}x`;
+    if (levelEl) levelEl.textContent = `Уровень: ${level}`;
 }
 
 function checkCollisions() {
@@ -265,19 +330,26 @@ function checkLevelUp() {
 }
 
 function drawScene() {
-    ctx.fillStyle = 'linear-gradient(180deg, #87CEEB 0%, #E0F6FF 100%)';
+    if (!ctx) return;
+
+    // Рисуем небо с градиентом
     const gradient = ctx.createLinearGradient(0, 0, 0, GAME_HEIGHT);
     gradient.addColorStop(0, '#87CEEB');
     gradient.addColorStop(1, '#E0F6FF');
     ctx.fillStyle = gradient;
     ctx.fillRect(0, 0, GAME_WIDTH, GAME_HEIGHT);
 
+    // Рисуем облака
     drawClouds();
 
+    // Рисуем травку внизу
     ctx.fillStyle = '#228B22';
     ctx.fillRect(0, GAME_HEIGHT - 50, GAME_WIDTH, 50);
 
+    // Рисуем предметы
     itemsManager.draw(ctx);
+
+    // Рисуем персонажа
     player.draw(ctx);
 }
 
@@ -300,46 +372,52 @@ function drawCloud(x, y, size) {
 
 async function showLeaderboard() {
     showScreen('leaderboardScreen');
-    document.getElementById('leaderboardList').innerHTML = '<div class="loading">Загрузка...</div>';
+    const leaderboardList = document.getElementById('leaderboardList');
+    if (leaderboardList) {
+        leaderboardList.innerHTML = '<div class="loading">Загрузка...</div>';
+    }
 
     try {
-        const leaderboardList = document.getElementById('leaderboardList');
-        leaderboardList.innerHTML = '';
-
         const mockData = [
             { rank: 1, name: 'Player1', score: 1500, level: 15, itemsCaught: 300 },
             { rank: 2, name: 'Player2', score: 1200, level: 12, itemsCaught: 240 },
             { rank: 3, name: 'Player3', score: 900, level: 9, itemsCaught: 180 },
         ];
 
-        mockData.forEach((player) => {
-            const item = document.createElement('div');
-            item.className = 'leaderboard-item';
+        if (leaderboardList) {
+            leaderboardList.innerHTML = '';
 
-            let rankClass = '';
-            let medal = '';
-            if (player.rank === 1) {
-                rankClass = 'top1';
-                medal = '🥇';
-            } else if (player.rank === 2) {
-                rankClass = 'top2';
-                medal = '🥈';
-            } else if (player.rank === 3) {
-                rankClass = 'top3';
-                medal = '🥉';
-            }
+            mockData.forEach((player) => {
+                const item = document.createElement('div');
+                item.className = 'leaderboard-item';
 
-            item.innerHTML = `
-                <span class="rank ${rankClass}">${medal} ${player.rank}</span>
-                <div class="player-name">${player.name}</div>
-                <span class="player-score">${player.score} ₿</span>
-            `;
+                let rankClass = '';
+                let medal = '';
+                if (player.rank === 1) {
+                    rankClass = 'top1';
+                    medal = '🥇';
+                } else if (player.rank === 2) {
+                    rankClass = 'top2';
+                    medal = '🥈';
+                } else if (player.rank === 3) {
+                    rankClass = 'top3';
+                    medal = '🥉';
+                }
 
-            leaderboardList.appendChild(item);
-        });
+                item.innerHTML = `
+                    <span class="rank ${rankClass}">${medal} ${player.rank}</span>
+                    <div class="player-name">${player.name}</div>
+                    <span class="player-score">${player.score} ₿</span>
+                `;
+
+                leaderboardList.appendChild(item);
+            });
+        }
     } catch (error) {
         console.error('Error loading leaderboard:', error);
-        document.getElementById('leaderboardList').innerHTML = '<div class="loading">Ошибка загрузки</div>';
+        if (leaderboardList) {
+            leaderboardList.innerHTML = '<div class="loading">Ошибка загрузки</div>';
+        }
     }
 }
 
