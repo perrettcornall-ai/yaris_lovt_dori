@@ -65,13 +65,18 @@ body {
 .menu-container {
     text-align: center;
     width: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    min-height: 100%;
 }
 
-.menu-container h1 {
-    font-size: 3em;
-    margin-bottom: 10px;
+.logo-section h1 {
+    font-size: 2.8em;
+    margin-bottom: 15px;
     color: var(--accent-color);
     text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+    line-height: 1.2;
     animation: bounce 2s infinite;
 }
 
@@ -80,10 +85,28 @@ body {
     50% { transform: translateY(-10px); }
 }
 
-.menu-container .subtitle {
+.logo-section .subtitle {
     font-size: 1.1em;
     color: var(--text-gray);
     margin-bottom: 30px;
+}
+
+.menu-buttons {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.footer-section {
+    padding-top: 20px;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.agency-text {
+    font-size: 0.95em;
+    color: var(--text-gray);
+    margin-bottom: 10px;
 }
 
 .btn, .btn-mini {
@@ -96,6 +119,8 @@ body {
     transition: all 0.3s ease;
     text-transform: uppercase;
     letter-spacing: 1px;
+    text-decoration: none;
+    display: inline-block;
 }
 
 .btn-primary {
@@ -125,6 +150,18 @@ body {
 
 .btn-secondary:hover {
     background: #005BA8;
+    transform: translateY(-2px);
+}
+
+.btn-telegram {
+    background: linear-gradient(135deg, #0088cc, #0055aa);
+    color: white;
+    width: 100%;
+    margin-top: 15px;
+}
+
+.btn-telegram:hover {
+    background: linear-gradient(135deg, #00aaff, #0077dd);
     transform: translateY(-2px);
 }
 
@@ -203,6 +240,8 @@ body {
     max-width: 350px;
     box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8);
     animation: popIn 0.3s ease-out;
+    max-height: 80vh;
+    overflow-y: auto;
 }
 
 @keyframes popIn {
@@ -360,9 +399,18 @@ body {
     line-height: 1.5;
 }
 
+.about-content a {
+    color: var(--accent-color);
+    text-decoration: none;
+}
+
+.about-content a:hover {
+    text-decoration: underline;
+}
+
 @media (max-width: 480px) {
-    .menu-container h1 {
-        font-size: 2.5em;
+    .logo-section h1 {
+        font-size: 2.2em;
     }
     
     #gameCanvas {
