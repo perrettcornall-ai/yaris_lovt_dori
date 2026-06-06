@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🐺 Yaris Lovt Dori - Telegram Game</title>
+    <title>🐺 Ярис Ловит Трафик - Telegram Game</title>
     <link rel="stylesheet" href="css/style.css">
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
 </head>
@@ -12,11 +12,21 @@
         <!-- Главное меню -->
         <div id="mainMenu" class="screen">
             <div class="menu-container">
-                <h1>🐺 YARIS LOVT DORI</h1>
-                <p class="subtitle">Ловите доры, зарабатывайте биткойны!</p>
-                <button id="playBtn" class="btn btn-primary">🎮 ИГРАТЬ</button>
-                <button id="leaderboardBtn" class="btn btn-secondary">🏆 ЛИДЕРЫ</button>
-                <button id="aboutBtn" class="btn btn-secondary">ℹ️ О ИГРЕ</button>
+                <div class="logo-section">
+                    <h1>🐺 ЯРИС<br>ЛОВИТ<br>ТРАФИК</h1>
+                    <p class="subtitle">Ловите трафик, зарабатывайте биткойны!</p>
+                </div>
+                
+                <div class="menu-buttons">
+                    <button id="playBtn" class="btn btn-primary">🎮 ИГРАТЬ</button>
+                    <button id="leaderboardBtn" class="btn btn-secondary">🏆 ЛИДЕРЫ</button>
+                    <button id="aboutBtn" class="btn btn-secondary">ℹ️ ПРАВИЛА</button>
+                </div>
+
+                <div class="footer-section">
+                    <p class="agency-text">SEO-Агентство <strong>Marketsek</strong></p>
+                    <a href="https://t.me/Marketsek" target="_blank" class="btn btn-telegram">📱 Наш Telegram</a>
+                </div>
             </div>
         </div>
 
@@ -57,8 +67,9 @@
                 <h2>💀 GAME OVER</h2>
                 <div class="game-over-stats">
                     <p><span>Финальный счет:</span> <span id="finalScore">0 ₿</span></p>
-                    <p><span>Поймано:</span> <span id="itemsCaught">0</span></p>
+                    <p><span>Трафика поймано:</span> <span id="itemsCaught">0</span></p>
                     <p><span>Время:</span> <span id="gameTime">0:00</span></p>
+                    <p><span>Уровень:</span> <span id="finalLevel">1</span></p>
                 </div>
                 <button id="restartGameBtn" class="btn btn-primary">🔄 ИГРАТЬ ЕЩЕ</button>
                 <button id="shareBtn" class="btn btn-secondary">📤 ПОДЕЛИТЬСЯ</button>
@@ -77,30 +88,30 @@
             </div>
         </div>
 
-        <!-- О игре -->
+        <!-- Правила -->
         <div id="aboutScreen" class="screen hidden">
             <div class="about-container">
-                <h2>ℹ️ О ИГРЕ</h2>
+                <h2>ℹ️ ПРАВИЛА ИГРЫ</h2>
                 <div class="about-content">
-                    <h3>📖 Правила</h3>
+                    <h3>📊 Типы трафика</h3>
                     <ul>
-                        <li>🟡 <strong>Золотые доры</strong> - +10 ₿</li>
-                        <li>⚫ <strong>Черные доры</strong> - +5 ₿</li>
-                        <li>💣 <strong>Бомбы</strong> - -10 ₿</li>
-                        <li>⚡ Combo за подряд: x2, x4, x8...</li>
+                        <li>🔴 <strong>Органический</strong> - +20 ₿</li>
+                        <li>🟠 <strong>Платный</strong> - +15 ₿</li>
+                        <li>🟡 <strong>Социальный</strong> - +10 ₿</li>
+                        <li>💥 <strong>Спам/Боты</strong> - -15 ₿</li>
                     </ul>
                     
                     <h3>🎮 Управление</h3>
                     <ul>
-                        <li>← → Стрелки для движения</li>
-                        <li>Или касание экрана</li>
+                        <li>← → Стрелки или касание</li>
+                        <li>Ловите трафик корзиной</li>
                     </ul>
 
-                    <h3>🚀 Сложность</h3>
-                    <p>После каждых 50 очков игра ускоряется!</p>
+                    <h3>⚡ Комбо система</h3>
+                    <p>Каждые 5 подряд поймано = x2 множитель</p>
 
-                    <h3>🏆 Лидеры</h3>
-                    <p>Топ-10 игроков отображается на доске почета.</p>
+                    <h3>📈 Сложность</h3>
+                    <p>После 200 ₿ скорость увеличивается!</p>
                 </div>
                 <button id="backAboutBtn" class="btn btn-secondary">◀ Назад</button>
             </div>
